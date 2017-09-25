@@ -24,11 +24,11 @@ public class Fragment_NetWork extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_network,container,false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.wifi_rv);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(new MyAdapter());
-        wifi_data.add(null);wifi_data.add(null);wifi_data.add(null);wifi_data.add(null);wifi_data.add(null);wifi_data.add(null);
+        View view = inflater.inflate(R.layout.fragment_scroll,container,false);
+//        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        recyclerView.setAdapter(new MyAdapter());
+//        wifi_data.add(null);wifi_data.add(null);wifi_data.add(null);wifi_data.add(null);wifi_data.add(null);wifi_data.add(null);
         return view;
     }
 
