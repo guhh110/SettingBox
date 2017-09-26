@@ -5,6 +5,7 @@
     android:orientation="horizontal"
     android:maxHeight="100dp"
     android:padding="10dp"
+    android:id="@+id/rootview"
     >
 
     <ImageView
@@ -19,6 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <TextView
+            android:textSize="16sp"
             android:gravity="center_vertical"
             android:id="@+id/wifi_name_tv"
             android:layout_weight="1"
@@ -26,6 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp" />
         <TextView
+            android:textColor="#ccc"
             android:gravity="center_vertical"
             android:id="@+id/wifi_status_tv"
             android:layout_weight="1"

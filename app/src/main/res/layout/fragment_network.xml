@@ -1,7 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView
+    <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/recyclerView"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/materialviewpager_logoHeight"
-    />
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include layout="@layout/material_view_pager_placeholder"/>
+        <LinearLayout
+            android:padding="20dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <android.support.v7.widget.CardView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/cardMarginVertical"
+                android:layout_marginLeft="@dimen/cardMarginHorizontal"
+                android:layout_marginRight="@dimen/cardMarginHorizontal"
+                android:layout_marginTop="@dimen/cardMarginVertical"
+                android:background="@android:color/white"
+                app:cardElevation="4dp">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp">
+                    <CheckBox
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="1"
+                        android:id="@+id/wifi_cb"
+                        android:text="无线网络"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp" />
+                    <TextView
+                        android:layout_marginRight="10dp"
+                        android:id="@+id/wifiState_tv"
+                        android:textColor="#666"
+                        android:text="WIFI未开启"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_marginTop="30dp"
+                    android:background="#ccc"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp" />
+                <android.support.v7.widget.RecyclerView
+                    android:layout_marginTop="31dp"
+                    android:id="@+id/wifi_rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </android.support.v7.widget.CardView>
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent">
+                <android.support.v7.widget.CardView
+                    android:padding="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/cardMarginVertical"
+                    android:layout_marginLeft="@dimen/cardMarginHorizontal"
+                    android:layout_marginRight="@dimen/cardMarginHorizontal"
+                    android:layout_marginTop="@dimen/cardMarginVertical"
+                    android:background="@android:color/white"
+                    app:cardElevation="4dp">
+                    <CheckBox
+                        android:layout_marginLeft="10dp"
+                        android:id="@+id/ethernet_cb"
+                        android:text="有线网络"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp" />
+                    <TextView
+                        android:layout_marginTop="30dp"
+                        android:background="#ccc"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp" />
+                <TextView
+                    android:layout_marginTop="31dp"
+                    android:text="以太网"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                </android.support.v7.widget.CardView>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>

@@ -14,7 +14,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private MaterialViewPager mViewPager;
     private List<Fragment> fragments;
-    private String[] titles = new String[]{"One","Two","Three","Four"};
+    private String[] titles = new String[]{"网络设置","显示设置","高级设置","其他设置"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
