@@ -141,9 +141,9 @@ public class WifiUtils
         return this.mWifiManager.getWifiState();
     }
 
-    public void connect2AccessPoint(ScanResult paramScanResult, String paramString)
+    public void connect2AccessPoint(ScanResult paramScanResult, String pwd)
     {
-        mPassWord = paramString;
+        mPassWord = pwd;
         mApName = paramScanResult.SSID;
         int i = getSecurityType(paramScanResult);
         List localList = this.mWifiManager.getConfiguredNetworks();

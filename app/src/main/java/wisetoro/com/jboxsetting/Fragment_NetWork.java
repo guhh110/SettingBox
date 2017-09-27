@@ -1,15 +1,22 @@
 package wisetoro.com.jboxsetting;
 
+import android.app.usage.NetworkStatsManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.Image;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
+import android.net.wifi.SupplicantState;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
@@ -87,6 +94,8 @@ public class Fragment_NetWork extends Fragment {
     private EditText wlqzcd_et;
     private EditText dns1_et;
     private EditText dns2_et;
+    private int mConnectCount;//记录连接wifi次数
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -102,13 +111,15 @@ public class Fragment_NetWork extends Fragment {
         super.onResume();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
         getActivity().registerReceiver(myBroadCastReceiver,intentFilter);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        getActivity().unregisterReceiver(myBroadCastReceiver);
+//        getActivity().unregisterReceiver(myBroadCastReceiver);
     }
 
     private void initView(View view){
@@ -153,7 +164,7 @@ public class Fragment_NetWork extends Fragment {
         });
     }
 
-    private void initConnectDialog(){
+    private void initConnectDialog(final ScanResult scanResult){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_connectwifi,null);
 
@@ -225,7 +236,7 @@ public class Fragment_NetWork extends Fragment {
         builder.setPositiveButton("连接", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                wifiUtil.connect2AccessPoint(scanResult,pwd_et.getText().toString().trim());
             }
         });
         builder.setNegativeButton("取消",null);
@@ -350,11 +361,17 @@ public class Fragment_NetWork extends Fragment {
                 @Override
                 public void onClick(View v) {
                     int position = (int) v.getTag();
-//                    wifiUtil.connect2AccessPoint(wifi_data.get(position),"sunpnsoft");
-                    if(connectDialog == null)
-                        initConnectDialog();
-                    connectDialog.show();
-                    connectDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+                    ScanResult wifiInfo = wifi_data.get(position);
+                    int securiType = wifiUtil.getSecurityType(wifiInfo);
+                    if(securiType == 0 || securiType == 4){
+                        wifiUtil.connect2AccessPoint(wifi_data.get(position),"");
+
+                    }else{
+                        initConnectDialog(wifi_data.get(position));
+                        connectDialog.setTitle(wifi_data.get(position).SSID);
+                        connectDialog.show();
+                        connectDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+                    }
                 }
             });
             return myViewHolder;
@@ -369,7 +386,13 @@ public class Fragment_NetWork extends Fragment {
             int level = WifiManager.calculateSignalLevel(wifiInfo.level, 4);//计算wifi信号等级
             setWifiLevelIcon(holder.imageView,level);//设置wifi的图标
             holder.wifiStatus_tv.setText(wifiInfo.capabilities);
-
+            int security = wifiUtil.getSecurityType(wifiInfo);
+            Log.i(TAG,security+"-"+wifiInfo.SSID);
+            if(security == 4 || security == 0){
+                holder.lock_iv.setImageResource(0);
+            }else {
+                holder.lock_iv.setImageResource(R.drawable.lock);
+            }
         }
 
         @Override
@@ -380,6 +403,7 @@ public class Fragment_NetWork extends Fragment {
         public class MyViewHolder extends RecyclerView.ViewHolder{
             private LinearLayout rootview;
 
+            private ImageView lock_iv;
             private ImageView imageView;
             private TextView wifiName_tv;
             private TextView wifiStatus_tv;
@@ -389,6 +413,7 @@ public class Fragment_NetWork extends Fragment {
                 imageView = (ImageView) itemView.findViewById(R.id.icon);
                 wifiName_tv = (TextView) itemView.findViewById(R.id.wifi_name_tv);
                 wifiStatus_tv = (TextView) itemView.findViewById(R.id.wifi_status_tv);
+                lock_iv = (ImageView) itemView.findViewById(R.id.lock_iv);
             }
         }
     }
@@ -402,7 +427,36 @@ public class Fragment_NetWork extends Fragment {
                 int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
                 Log.i(TAG,wifiState+"----");
                 changeWifiState(wifiState);
+
+            }else if(intent.getAction().equals(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION)) {
+                WifiManager mWifiManager = ((WifiManager)getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE));
+                WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+                SupplicantState state = wifiInfo.getSupplicantState();
+                String str = "";
+                if(state == SupplicantState.SCANNING) {
+                    str = "正在扫描";
+                }
+                if(state == SupplicantState.ASSOCIATED) {
+                    str = "关联AP成功";
+                }else if(state.toString().equals("AUTHENTICATING")) {
+                    str = "正在验证";
+                }else if(state == SupplicantState.ASSOCIATING) {
+                    str = "正在关联AP...";
+                }else if(state == SupplicantState.COMPLETED) {
+                    str = "连接成功";
+                }else if(state == SupplicantState.INACTIVE) {
+
+                }
+                else if(state.toString().equals("DISCONNECTED")){
+                    if(mConnectCount <1)
+                        mConnectCount++;
+                    else {
+                        Toast.makeText(getContext(), "密码错误", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                //Toast.makeText(getApplicationContext(),str, Toast.LENGTH_SHORT).show();
             }
+
         }
     }
 
